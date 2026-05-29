@@ -24,3 +24,15 @@ def create_task():
         "message": "Task created",
         "task": task.data
     }
+    
+@task_bp.route("", methods=["GET"])
+def get_tasks():
+
+    tasks = (
+        supabase
+        .table("tasks")
+        .select("*")
+        .execute()
+    )
+
+    return tasks.data

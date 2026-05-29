@@ -1,27 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { api } from "@/lib/api";
 
 export default function AdminTasksPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [tasks, setTasks] = useState([]);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await api.get("/api/tasks");
+      setTasks(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
   const handleCreateTask = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) return;
+      if (!user) return;
 
-    const response = await api.post("/api/tasks", {
-      title,
-      description,
-      created_by: user.id,
-    });
+      await api.post("/api/tasks", {
+        title,
+        description,
+        created_by: user.id,
+      });
 
-    console.log(response.data);
+      setTitle("");
+      setDescription("");
+
+      fetchTasks();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -34,15 +55,40 @@ export default function AdminTasksPage() {
         onChange={(e) => setTitle(e.target.value)}
       />
 
+      <br />
+
       <textarea
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
 
+      <br />
+
       <button onClick={handleCreateTask}>
         Create Task
       </button>
+
+      <hr />
+
+      <h2>All Tasks</h2>
+
+      {tasks.map((task: any) => (
+        <div
+          key={task.id}
+          style={{
+            border: "1px solid gray",
+            padding: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          <h3>{task.title}</h3>
+
+          <p>{task.description}</p>
+
+          <p>Status: {task.status}</p>
+        </div>
+      ))}
     </div>
   );
 }
