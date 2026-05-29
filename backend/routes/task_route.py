@@ -40,7 +40,11 @@ def get_tasks():
 @task_bp.route("/<task_id>/assign", methods=["POST"])
 def assign_task(task_id):
 
+    print("TASK ID:", task_id)
+
     data = request.json
+
+    print("DATA:", data)
 
     assigned_user_id = data["user_id"]
 
@@ -59,3 +63,20 @@ def assign_task(task_id):
         "message": "Task assigned",
         "task": updated_task.data
     }
+    
+@task_bp.route("/user/<user_id>", methods=["GET"])
+def get_user_tasks(user_id):
+
+    print("USER ID:", user_id)
+
+    tasks = (
+        supabase
+        .table("tasks")
+        .select("*")
+        .eq("assigned_to", user_id)
+        .execute()
+    )
+
+    print(tasks.data)
+
+    return tasks.data

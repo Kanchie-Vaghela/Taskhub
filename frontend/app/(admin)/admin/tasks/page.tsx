@@ -9,6 +9,7 @@ export default function AdminTasksPage() {
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState<Record<string, string>>({});
 
   const fetchTasks = async () => {
     try {
@@ -52,20 +53,13 @@ export default function AdminTasksPage() {
     fetchUsers();
   }, []);
 
-  const assignTask = async (
-  taskId: string,
-  userId: string
-) => {
-
-  await api.post(
-    `/api/tasks/${taskId}/assign`,
-    {
+  const assignTask = async (taskId: string, userId: string) => {
+    await api.post(`/api/tasks/${taskId}/assign`, {
       user_id: userId,
-    }
-  );
+    });
 
-  fetchTasks();
-};
+    fetchTasks();
+  };
 
   return (
     <div>
@@ -88,35 +82,48 @@ export default function AdminTasksPage() {
       <br />
 
       <select>
-        <option value="">Select a user</option>
+        <option>Select User</option>
+
         {users.map((user) => (
           <option key={user.id} value={user.id}>
-            {user.name}
+            {user.email}
           </option>
         ))}
       </select>
 
-        <br />
+      <br />
       <button onClick={handleCreateTask}>Create Task</button>
 
       <hr />
 
       <h2>All Tasks</h2>
 
-      {tasks.map((task: any) => (
-        <div
-          key={task.id}
-          style={{
-            border: "1px solid gray",
-            padding: "10px",
-            marginBottom: "10px",
-          }}
-        >
+      {tasks.map((task) => (
+        <div key={task.id}>
           <h3>{task.title}</h3>
-
           <p>{task.description}</p>
-
           <p>Status: {task.status}</p>
+
+          <select
+            onChange={(e) =>
+              setSelectedUser({
+                ...selectedUser,
+                [task.id]: e.target.value,
+              })
+            }
+          >
+            <option>Select User</option>
+
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.email}
+              </option>
+            ))}
+          </select>
+
+          <button onClick={() => assignTask(task.id, selectedUser[task.id])}>
+            Assign
+          </button>
         </div>
       ))}
     </div>
