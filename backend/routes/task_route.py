@@ -36,3 +36,26 @@ def get_tasks():
     )
 
     return tasks.data
+
+@task_bp.route("/<task_id>/assign", methods=["POST"])
+def assign_task(task_id):
+
+    data = request.json
+
+    assigned_user_id = data["user_id"]
+
+    updated_task = (
+        supabase
+        .table("tasks")
+        .update({
+            "assigned_to": assigned_user_id,
+            "status": "assigned"
+        })
+        .eq("id", task_id)
+        .execute()
+    )
+
+    return {
+        "message": "Task assigned",
+        "task": updated_task.data
+    }

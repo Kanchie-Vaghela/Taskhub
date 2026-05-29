@@ -8,6 +8,7 @@ export default function AdminTasksPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
 
   const fetchTasks = async () => {
     try {
@@ -17,10 +18,6 @@ export default function AdminTasksPage() {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
 
   const handleCreateTask = async () => {
     try {
@@ -45,6 +42,31 @@ export default function AdminTasksPage() {
     }
   };
 
+  const fetchUsers = async () => {
+    const res = await api.get("/api/auth/users");
+    setUsers(res.data);
+  };
+
+  useEffect(() => {
+    fetchTasks();
+    fetchUsers();
+  }, []);
+
+  const assignTask = async (
+  taskId: string,
+  userId: string
+) => {
+
+  await api.post(
+    `/api/tasks/${taskId}/assign`,
+    {
+      user_id: userId,
+    }
+  );
+
+  fetchTasks();
+};
+
   return (
     <div>
       <h1>Create Task</h1>
@@ -65,9 +87,17 @@ export default function AdminTasksPage() {
 
       <br />
 
-      <button onClick={handleCreateTask}>
-        Create Task
-      </button>
+      <select>
+        <option value="">Select a user</option>
+        {users.map((user) => (
+          <option key={user.id} value={user.id}>
+            {user.name}
+          </option>
+        ))}
+      </select>
+
+        <br />
+      <button onClick={handleCreateTask}>Create Task</button>
 
       <hr />
 

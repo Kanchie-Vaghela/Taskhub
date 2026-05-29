@@ -41,3 +41,17 @@ def sync_user():
         "message": "User exists",
         "role": existing_user.data[0]["role"]
     }
+    
+@auth_bp.route("/users", methods=["GET"])
+def get_users():
+    
+
+
+    users = (
+        supabase
+        .table("users")
+        .select("*")
+        .execute()
+    )
+
+    return users.data
