@@ -64,6 +64,40 @@ def assign_task(task_id):
         "task": updated_task.data
     }
     
+@task_bp.route("/<task_id>", methods=["GET"])
+def get_task(task_id):
+
+    task = (
+        supabase
+        .table("tasks")
+        .select("*")
+        .eq("id", task_id)
+        .single()
+        .execute()
+    )
+
+    return task.data
+
+@task_bp.route("/<task_id>/status", methods=["PATCH"])
+def update_task_status(task_id):
+
+    data = request.json
+
+    task = (
+        supabase
+        .table("tasks")
+        .update({
+            "status": data["status"]
+        })
+        .eq("id", task_id)
+        .execute()
+    )
+
+    return {
+        "message": "Status updated",
+        "task": task.data
+    }
+
 @task_bp.route("/user/<user_id>", methods=["GET"])
 def get_user_tasks(user_id):
 
