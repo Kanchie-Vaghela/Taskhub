@@ -15,7 +15,9 @@ def create_task():
             "title": data["title"],
             "description": data["description"],
             "created_by": data["created_by"],
-            "status": "pending"
+            "assigned_to": data["assigned_to"],
+            "product_image_url": data["product_image_url"],
+            "status": "assigned"
         })
         .execute()
     )
