@@ -5,9 +5,16 @@ import { supabase } from "@/lib/supabase";
 import { api } from "@/lib/api";
 
 export default function AdminTasksPage() {
+  type Task = {
+    id: string;
+    title: string;
+    description: string;
+    status: string;
+    assigned_to: string | null;
+  };
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [tasks, setTasks] = useState([]);
   const [users, setUsers] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<Record<string, string>>({});
 
@@ -104,26 +111,32 @@ export default function AdminTasksPage() {
           <p>{task.description}</p>
           <p>Status: {task.status}</p>
 
-          <select
-            onChange={(e) =>
-              setSelectedUser({
-                ...selectedUser,
-                [task.id]: e.target.value,
-              })
-            }
-          >
-            <option>Select User</option>
+          {task.assigned_to == null ? (
+            <>
+              <select
+                onChange={(e) =>
+                  setSelectedUser({
+                    ...selectedUser,
+                    [task.id]: e.target.value,
+                  })
+                }
+              >
+                <option>Select User</option>
 
-            {users.map((user) => (
-              <option key={user.id} value={user.id}>
-                {user.email}
-              </option>
-            ))}
-          </select>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.email}
+                  </option>
+                ))}
+              </select>
 
-          <button onClick={() => assignTask(task.id, selectedUser[task.id])}>
-            Assign
-          </button>
+              <button
+                onClick={() => assignTask(task.id, selectedUser[task.id])}
+              >
+                Assign
+              </button>
+            </>
+          ) : null}
         </div>
       ))}
     </div>
