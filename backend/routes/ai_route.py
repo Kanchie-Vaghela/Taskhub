@@ -19,6 +19,7 @@ def generate_images(task_id):
         "job_id": job_id,
         "status": "queued"
     }
+   
     
 @ai_bp.route("/jobs/<job_id>/status", methods=["GET"])
 def get_job_status(job_id):
@@ -28,16 +29,28 @@ def get_job_status(job_id):
         "status": "completed"
     }
     
-@ai_bp.route(
-    "/tasks/<task_id>/generations",
-    methods=["GET"]
-)
-def get_generations(task_id):
+
 
     return [
         {
             "id": "1",
             "image_url":
             "https://picsum.photos/500"
+        }
+    ]
+    
+@ai_bp.route( "/tasks/<task_id>/generations", methods=["GET"])
+def get_generations(task_id):
+
+    return [
+        {
+            "id": "1",
+            "image_url":
+            "https://picsum.photos/600/400"
+        },
+        {
+            "id": "2",
+            "image_url":
+            "https://picsum.photos/600/401"
         }
     ]

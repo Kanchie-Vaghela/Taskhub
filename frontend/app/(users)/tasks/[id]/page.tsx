@@ -11,6 +11,8 @@ export default function TaskDetailsPage() {
   const [task, setTask] = useState<any>(null);
   const [job, setJob] = useState<any>(null);
   const [style, setStyle] = useState("luxury");
+  const [jobStatus, setJobStatus] = useState("");
+  const [generatedImages, setGeneratedImages] = useState<any[]>([]);
 
   const updateStatus = async (status: string) => {
     try {
@@ -58,12 +60,28 @@ export default function TaskDetailsPage() {
       });
 
       setJob(res.data);
+      await checkStatus(res.data.job_id);
+
+      await fetchGenerations();
 
       console.log(res.data);
     } catch (error) {
       console.error(error);
     }
   };
+
+  const checkStatus = async (jobId: string) => {
+    const res = await api.get(`/api/jobs/${jobId}/status`);
+
+    setJobStatus(res.data.status);
+  };
+
+  const fetchGenerations = async () => {
+    const res = await api.get(`/api/tasks/${taskId}/generations`);
+
+    setGeneratedImages(res.data);
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="bg-white rounded-2xl shadow border overflow-hidden">
@@ -140,6 +158,18 @@ export default function TaskDetailsPage() {
               <p>Style: {job.style}</p>
             </div>
           )}
+          <p>Status: {jobStatus}</p>
+
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            {generatedImages.map((img) => (
+              <img
+                key={img.id}
+                src={img.image_url}
+                alt=""
+                className="rounded-lg"
+              />
+            ))}
+          </div>
 
           <div className="flex gap-4 mt-8">
             <button
