@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from routes.auth_route import auth_bp
 from routes.task_route import task_bp
+from routes.ai_route import ai_bp
 
 app = Flask(__name__)
 
@@ -15,10 +16,17 @@ CORS(
     }
 )
 
-app.register_blueprint(auth_bp, url_prefix="/api/auth")
+app.register_blueprint(
+    auth_bp, 
+    url_prefix="/api/auth"
+)
 app.register_blueprint(
     task_bp,
     url_prefix="/api/tasks"
+)
+app.register_blueprint(
+    ai_bp,
+    url_prefix="/api"
 )
 
 

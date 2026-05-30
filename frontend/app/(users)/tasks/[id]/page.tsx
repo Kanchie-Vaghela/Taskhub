@@ -9,6 +9,8 @@ export default function TaskDetailsPage() {
   const taskId = params.id as string;
 
   const [task, setTask] = useState<any>(null);
+  const [job, setJob] = useState<any>(null);
+  const [style, setStyle] = useState("luxury");
 
   const updateStatus = async (status: string) => {
     try {
@@ -49,6 +51,19 @@ export default function TaskDetailsPage() {
     return <div>Loading...</div>;
   }
 
+  const generateImages = async () => {
+    try {
+      const res = await api.post(`/api/tasks/${taskId}/generate`, {
+        style,
+      });
+
+      setJob(res.data);
+
+      console.log(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="bg-white rounded-2xl shadow border overflow-hidden">
@@ -95,6 +110,36 @@ export default function TaskDetailsPage() {
               <p className="text-gray-600 break-all">{task.assigned_to}</p>
             </div>
           </div>
+
+          <div className="mt-8">
+            <h2 className="text-xl font-bold mb-3">AI Generation</h2>
+
+            <select
+              value={style}
+              onChange={(e) => setStyle(e.target.value)}
+              className="border p-2 rounded"
+            >
+              <option value="luxury">Luxury</option>
+              <option value="lifestyle">Lifestyle</option>
+              <option value="studio">Studio</option>
+              <option value="instagram">Instagram Ad</option>
+            </select>
+
+            <button
+              onClick={generateImages}
+              className="ml-3 px-4 py-2 bg-black text-white rounded"
+            >
+              Generate
+            </button>
+          </div>
+
+          {job && (
+            <div className="mt-4 border rounded p-4">
+              <p>Job ID: {job.job_id}</p>
+              <p>Status: {job.status}</p>
+              <p>Style: {job.style}</p>
+            </div>
+          )}
 
           <div className="flex gap-4 mt-8">
             <button
