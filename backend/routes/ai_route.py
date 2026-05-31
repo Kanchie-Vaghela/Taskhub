@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 import uuid
+from services.supabase import supabase
 
 ai_bp = Blueprint("ai", __name__)
 
@@ -10,14 +11,44 @@ def generate_images(task_id):
 
     style = data.get("style")
 
-    job_id = str(uuid.uuid4())
+    # remove old generated images
+    supabase.table(
+        "generated_images"
+    ).delete().eq(
+        "task_id",
+        task_id
+    ).execute()
+
+    # fake image 1
+    supabase.table(
+        "generated_images"
+    ).insert({
+        "task_id": task_id,
+        "image_type": style,
+        "image_url": "https://picsum.photos/600/400",
+        "prompt_used": f"{style} product photography",
+        "angle": "front",
+        "metadata": {
+            "provider": "fake"
+        }
+    }).execute()
+
+    # fake image 2
+    supabase.table(
+        "generated_images"
+    ).insert({
+        "task_id": task_id,
+        "image_type": style,
+        "image_url": "https://picsum.photos/600/401",
+        "prompt_used": f"{style} product photography",
+        "angle": "side",
+        "metadata": {
+            "provider": "fake"
+        }
+    }).execute()
 
     return {
-        "message": "Generation started",
-        "task_id": task_id,
-        "style": style,
-        "job_id": job_id,
-        "status": "queued"
+        "status": "completed"
     }
    
     
