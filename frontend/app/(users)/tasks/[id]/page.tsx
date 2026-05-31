@@ -13,6 +13,7 @@ export default function TaskDetailsPage() {
   const [style, setStyle] = useState("luxury");
   const [jobStatus, setJobStatus] = useState("");
   const [generatedImages, setGeneratedImages] = useState<any[]>([]);
+  const [jobId, setJobId] = useState("");
 
   const updateStatus = async (status: string) => {
     try {
@@ -49,32 +50,50 @@ export default function TaskDetailsPage() {
     fetchTask();
   }, [taskId]);
 
+   useEffect(() => {
+    if (!jobId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await api.get(`/api/jobs/${jobId}/status`);
+
+        setJobStatus(res.data.status);
+
+        if (res.data.status === "completed") {
+          clearInterval(interval);
+
+          await fetchGenerations();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [jobId]);
+
+
   if (!task) {
     return <div>Loading...</div>;
   }
 
   const generateImages = async () => {
-    try {
-      const res = await api.post(`/api/tasks/${taskId}/generate`, {
+  try {
+    const res = await api.post(
+      `/api/tasks/${taskId}/generate`,
+      {
         style,
-      });
+      }
+    );
 
-      setJob(res.data);
-      await checkStatus(res.data.job_id);
+    setJob(res.data);
+    setJobId(res.data.job_id);
 
-      await fetchGenerations();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-      console.log(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const checkStatus = async (jobId: string) => {
-    const res = await api.get(`/api/jobs/${jobId}/status`);
-
-    setJobStatus(res.data.status);
-  };
 
   const fetchGenerations = async () => {
     const res = await api.get(`/api/tasks/${taskId}/generations`);
@@ -82,6 +101,7 @@ export default function TaskDetailsPage() {
     setGeneratedImages(res.data);
   };
 
+ 
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="bg-white rounded-2xl shadow border overflow-hidden">
@@ -158,7 +178,8 @@ export default function TaskDetailsPage() {
               <p>Style: {job.style}</p>
             </div>
           )}
-          <p>Status: {jobStatus}</p>
+
+          {jobStatus && <p className="mt-3">Status: {jobStatus}</p>}
 
           <div className="grid grid-cols-2 gap-4 mt-6">
             {generatedImages.map((img) => (
