@@ -40,9 +40,8 @@ while True:
 
         time.sleep(5)
 
-        supabase.table(
-            "generated_images"
-        ).insert({
+        images = [
+        {
             "task_id": job["task_id"],
             "image_type": "luxury",
             "image_url":
@@ -50,10 +49,29 @@ while True:
             "prompt_used":
             "fake generation",
             "angle": "front",
+            "is_selected": False,
             "metadata": {
                 "provider": "fake"
-            }
-        }).execute()
+        }
+        },
+        {
+            "task_id": job["task_id"],
+            "image_type": "luxury",
+            "image_url":
+            "https://picsum.photos/600/401",
+            "prompt_used":
+            "fake generation",
+            "angle": "side",
+            "is_selected": False,
+            "metadata": {
+                "provider": "fake"
+        }
+        }
+        ]   
+
+        supabase.table(
+            "generated_images"
+        ).insert(images).execute()
 
         supabase.table(
             "jobs"

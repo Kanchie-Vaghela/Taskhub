@@ -4,8 +4,11 @@ from flask_cors import CORS
 from routes.auth_route import auth_bp
 from routes.task_route import task_bp
 from routes.ai_route import ai_bp
+from extensions import limiter
 
 app = Flask(__name__)
+
+limiter.init_app(app)
 
 CORS(
     app,

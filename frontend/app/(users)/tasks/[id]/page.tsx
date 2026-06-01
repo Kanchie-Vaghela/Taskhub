@@ -14,21 +14,8 @@ export default function TaskDetailsPage() {
   const [jobStatus, setJobStatus] = useState("");
   const [generatedImages, setGeneratedImages] = useState<any[]>([]);
   const [jobId, setJobId] = useState("");
-
-  const updateStatus = async (status: string) => {
-    try {
-      await api.patch(`/api/tasks/${taskId}/status`, {
-        status,
-      });
-
-      setTask({
-        ...task,
-        status,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const [previewImage, setPreviewImage] =
+  useState("");
 
   useEffect(() => {
     if (!taskId) return;
@@ -50,7 +37,7 @@ export default function TaskDetailsPage() {
     fetchTask();
   }, [taskId]);
 
-   useEffect(() => {
+  useEffect(() => {
     if (!jobId) return;
 
     const interval = setInterval(async () => {
@@ -72,36 +59,50 @@ export default function TaskDetailsPage() {
     return () => clearInterval(interval);
   }, [jobId]);
 
-
   if (!task) {
     return <div>Loading...</div>;
   }
 
   const generateImages = async () => {
-  try {
-    const res = await api.post(
-      `/api/tasks/${taskId}/generate`,
-      {
+    try {
+      const res = await api.post(`/api/tasks/${taskId}/generate`, {
         style,
-      }
-    );
+      });
 
-    setJob(res.data);
-    setJobId(res.data.job_id);
-
-  } catch (error) {
-    console.error(error);
-  }
-};
-
+      setJob(res.data);
+      setJobId(res.data.job_id);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchGenerations = async () => {
     const res = await api.get(`/api/tasks/${taskId}/generations`);
 
     setGeneratedImages(res.data);
   };
+  const selectImage = async (imageId: string) => {
+    try {
+      await api.patch(`/api/generations/${imageId}/select`);
 
- 
+      fetchGenerations();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const submitSelection = async () => {
+    try {
+      await api.post(`/api/tasks/${taskId}/submit`);
+
+      const res = await api.get(`/api/tasks/${taskId}`);
+
+      setTask(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="bg-white rounded-2xl shadow border overflow-hidden">
@@ -165,9 +166,14 @@ export default function TaskDetailsPage() {
 
             <button
               onClick={generateImages}
-              className="ml-3 px-4 py-2 bg-black text-white rounded"
+              disabled={jobStatus === "queued" || jobStatus === "processing"}
+              className="ml-3 px-4 py-2 rounded text-white disabled:bg-gray-400 disabled:cursor-not-allowed bg-black"
             >
-              Generate
+              {jobStatus === "queued" && "Queued..."}
+
+              {jobStatus === "processing" && "Generating..."}
+
+              {(jobStatus === "" || jobStatus === "completed") && "Generate"}
             </button>
           </div>
 
@@ -183,30 +189,29 @@ export default function TaskDetailsPage() {
 
           <div className="grid grid-cols-2 gap-4 mt-6">
             {generatedImages.map((img) => (
-              <img
-                key={img.id}
-                src={img.image_url}
-                alt=""
-                className="rounded-lg"
-              />
+              <div key={img.id} className="border rounded-lg p-3">
+                <img src={img.image_url} alt="" className="rounded-lg mb-3" />
+
+                {img.is_selected && (
+                  <div className="mb-2 text-green-600 font-semibold">
+                    ✅ Selected
+                  </div>
+                )}
+
+                <button
+                  onClick={() => selectImage(img.id)}
+                  className="px-3 py-2 bg-black text-white rounded"
+                >
+                  Select
+                </button>
+              </div>
             ))}
           </div>
-
-          <div className="flex gap-4 mt-8">
-            <button
-              onClick={() => updateStatus("in_progress")}
-              className="px-5 py-3 rounded-lg bg-yellow-500 text-white font-medium"
-            >
-              Start Task
-            </button>
-
-            <button
-              onClick={() => updateStatus("completed")}
-              className="px-5 py-3 rounded-lg bg-green-600 text-white font-medium"
-            >
-              Complete Task
-            </button>
-          </div>
+          <button
+            onClick={submitSelection}
+            className="mt-6 px-5 py-3 bg-green-600 text-white rounded-lg">
+            Submit Selected Images
+          </button>
         </div>
       </div>
     </div>
