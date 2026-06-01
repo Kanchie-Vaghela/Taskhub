@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { api } from "@/lib/api";
+import { useRouter } from "next/navigation";
+
 
 export default function TaskDetailsPage() {
   const params = useParams();
@@ -15,6 +17,8 @@ export default function TaskDetailsPage() {
   const [generatedImages, setGeneratedImages] = useState<any[]>([]);
   const [jobId, setJobId] = useState("");
   const [previewImage, setPreviewImage] = useState("");
+  const router = useRouter();
+  
 
   const fetchGenerations = async () => {
     const res = await api.get(`/api/tasks/${taskId}/generations`);
@@ -99,6 +103,8 @@ export default function TaskDetailsPage() {
       const res = await api.get(`/api/tasks/${taskId}`);
 
       setTask(res.data);
+      alert("Images submitted for review");
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
     }
@@ -143,6 +149,25 @@ export default function TaskDetailsPage() {
                 {task.description}
               </p>
             </div>
+
+            {task.review_feedback && (
+              <div
+                className="
+      mt-6
+      bg-yellow-50
+      border
+      border-yellow-200
+      rounded-xl
+      p-4
+    "
+              >
+                <h3 className="font-semibold text-yellow-800">
+                  ⚠ Revision Feedback
+                </h3>
+
+                <p className="mt-2 text-yellow-700">{task.review_feedback}</p>
+              </div>
+            )}
 
             <div>
               <h2 className="font-semibold text-lg mb-2">Assigned To</h2>
@@ -234,7 +259,8 @@ export default function TaskDetailsPage() {
               <img
                 src={previewImage}
                 alt=""
-                className="max-w-[90vw] max-h-[90vh] rounded-xl"/>
+                className="max-w-[90vw] max-h-[90vh] rounded-xl"
+              />
             </div>
           )}
         </div>

@@ -2,6 +2,8 @@ from flask import Blueprint, request
 import uuid
 from services.supabase import supabase
 from extensions import limiter
+from services.email_service import send_email
+import os
 
 ai_bp = Blueprint("ai", __name__)
 
@@ -133,6 +135,18 @@ def submit_selection(task_id):
         }, 400
 
     supabase.table(
+    "generated_images"
+    ).update({
+        "submitted_for_review": True
+    }).eq(
+        "task_id",
+        task_id
+    ).eq(
+        "is_selected",
+        True
+    ).execute()
+
+    supabase.table(
         "tasks"
     ).update({
         "status": "review"
@@ -140,7 +154,22 @@ def submit_selection(task_id):
         "id",
         task_id
     ).execute()
+    send_email(
+        os.getenv("ADMIN_EMAIL"),
+        "Task Submitted For Review",
+        f"""
+        <h2>Task Submitted</h2>
 
+        <p>
+            Task ID:
+            {task_id}
+        </p>
+
+        <p>
+            Ready for review.
+        </p>
+        """
+    )
     return {
         "message":
         "Task completed"

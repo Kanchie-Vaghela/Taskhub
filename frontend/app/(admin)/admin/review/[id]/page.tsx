@@ -11,6 +11,7 @@ export default function ReviewTaskPage() {
   const [task, setTask] = useState<any>(null);
   const [images, setImages] = useState<any[]>([]);
   const [previewImage, setPreviewImage] = useState("");
+  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     if (!taskId) return;
@@ -20,21 +21,13 @@ export default function ReviewTaskPage() {
 
   const fetchData = async () => {
     try {
-      const taskRes = await api.get(
-        `/api/tasks/${taskId}`
-      );
+      const taskRes = await api.get(`/api/tasks/${taskId}`);
 
       setTask(taskRes.data);
 
-      const imageRes = await api.get(
-        `/api/tasks/${taskId}/generations`
-      );
+      const imageRes = await api.get(`/api/tasks/${taskId}/generations`);
 
-      setImages(
-        imageRes.data.filter(
-          (img: any) => img.is_selected
-        )
-      );
+      setImages(imageRes.data.filter((img: any) => img.submitted_for_review));
     } catch (error) {
       console.error(error);
     }
@@ -42,9 +35,7 @@ export default function ReviewTaskPage() {
 
   const approveTask = async () => {
     try {
-      await api.patch(
-        `/api/tasks/${taskId}/approve`
-      );
+      await api.patch(`/api/tasks/${taskId}/approve`);
 
       alert("Task Approved");
 
@@ -56,9 +47,9 @@ export default function ReviewTaskPage() {
 
   const requestRevision = async () => {
     try {
-      await api.patch(
-        `/api/tasks/${taskId}/revision`
-      );
+      await api.patch(`/api/tasks/${taskId}/revision`, {
+        feedback,
+      });
 
       alert("Revision Requested");
 
@@ -69,27 +60,17 @@ export default function ReviewTaskPage() {
   };
 
   if (!task) {
-    return (
-      <div className="p-6">
-        Loading...
-      </div>
-    );
+    return <div className="p-6">Loading...</div>;
   }
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8">
       <div className="bg-white border rounded-xl p-6 shadow-sm">
-
-        <h1 className="text-3xl font-bold mb-6">
-          Review Task
-        </h1>
+        <h1 className="text-3xl font-bold mb-6">Review Task</h1>
 
         <div className="grid md:grid-cols-2 gap-8">
-
           <div>
-            <h2 className="font-semibold text-lg mb-3">
-              Original Product
-            </h2>
+            <h2 className="font-semibold text-lg mb-3">Original Product</h2>
 
             {task.product_image_url && (
               <img
@@ -105,13 +86,9 @@ export default function ReviewTaskPage() {
           </div>
 
           <div>
-            <h2 className="font-semibold text-lg">
-              {task.title}
-            </h2>
+            <h2 className="font-semibold text-lg">{task.title}</h2>
 
-            <p className="text-gray-600 mt-3">
-              {task.description}
-            </p>
+            <p className="text-gray-600 mt-3">{task.description}</p>
 
             <div className="mt-4">
               <span
@@ -128,19 +105,14 @@ export default function ReviewTaskPage() {
               </span>
             </div>
           </div>
-
         </div>
 
         <hr className="my-8" />
 
-        <h2 className="text-2xl font-bold mb-4">
-          Selected Images
-        </h2>
+        <h2 className="text-2xl font-bold mb-4">Selected Images</h2>
 
         {images.length === 0 ? (
-          <p className="text-gray-500">
-            No selected images found.
-          </p>
+          <p className="text-gray-500">No selected images found.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {images.map((img) => (
@@ -155,11 +127,7 @@ export default function ReviewTaskPage() {
                 <img
                   src={img.image_url}
                   alt=""
-                  onClick={() =>
-                    setPreviewImage(
-                      img.image_url
-                    )
-                  }
+                  onClick={() => setPreviewImage(img.image_url)}
                   className="
                     w-full
                     cursor-pointer
@@ -171,8 +139,20 @@ export default function ReviewTaskPage() {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-4 mt-8">
+        <textarea
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
+          placeholder="Explain what needs revision..."
+          className="
+    w-full
+    border
+    rounded-lg
+    p-3
+    mt-6
+  "
+        />
 
+        <div className="flex flex-wrap gap-4 mt-8">
           <button
             onClick={approveTask}
             className="
@@ -198,9 +178,7 @@ export default function ReviewTaskPage() {
           >
             Request Revision
           </button>
-
         </div>
-
       </div>
 
       {previewImage && (
@@ -215,9 +193,7 @@ export default function ReviewTaskPage() {
             z-50
             p-4
           "
-          onClick={() =>
-            setPreviewImage("")
-          }
+          onClick={() => setPreviewImage("")}
         >
           <img
             src={previewImage}

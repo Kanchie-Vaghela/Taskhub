@@ -131,6 +131,15 @@ def approve_task(task_id):
         "id",
         task_id
     ).execute()
+    
+    supabase.table(
+        "generated_images"
+    ).update({
+        "submitted_for_review": False
+    }).eq(
+        "task_id",
+        task_id
+    ).execute()
 
     return {
         "message":
@@ -143,16 +152,28 @@ def approve_task(task_id):
 )
 def request_revision(task_id):
 
+    data = request.json
+
     supabase.table(
         "tasks"
     ).update({
-        "status":
-        "in_progress"
+        "status": "review",
+        "review_feedback":
+        data.get("feedback", "")
     }).eq(
         "id",
         task_id
     ).execute()
 
+    supabase.table(
+        "generated_images"
+    ).update({
+        "submitted_for_review": False
+    }).eq(
+        "task_id",
+        task_id
+    ).execute()
+    
     return {
         "message":
         "Revision requested"
