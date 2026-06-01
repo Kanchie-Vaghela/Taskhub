@@ -14,8 +14,13 @@ export default function TaskDetailsPage() {
   const [jobStatus, setJobStatus] = useState("");
   const [generatedImages, setGeneratedImages] = useState<any[]>([]);
   const [jobId, setJobId] = useState("");
-  const [previewImage, setPreviewImage] =
-  useState("");
+  const [previewImage, setPreviewImage] = useState("");
+
+  const fetchGenerations = async () => {
+    const res = await api.get(`/api/tasks/${taskId}/generations`);
+
+    setGeneratedImages(res.data);
+  };
 
   useEffect(() => {
     if (!taskId) return;
@@ -29,6 +34,7 @@ export default function TaskDetailsPage() {
         console.log(res.data);
 
         setTask(res.data);
+        await fetchGenerations();
       } catch (error) {
         console.error(error);
       }
@@ -76,11 +82,6 @@ export default function TaskDetailsPage() {
     }
   };
 
-  const fetchGenerations = async () => {
-    const res = await api.get(`/api/tasks/${taskId}/generations`);
-
-    setGeneratedImages(res.data);
-  };
   const selectImage = async (imageId: string) => {
     try {
       await api.patch(`/api/generations/${imageId}/select`);
@@ -187,14 +188,25 @@ export default function TaskDetailsPage() {
 
           {jobStatus && <p className="mt-3">Status: {jobStatus}</p>}
 
-          <div className="grid grid-cols-2 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             {generatedImages.map((img) => (
               <div key={img.id} className="border rounded-lg p-3">
-                <img src={img.image_url} alt="" className="rounded-lg mb-3" />
+                <img
+                  src={img.image_url}
+                  alt=""
+                  onClick={() => setPreviewImage(img.image_url)}
+                  className="
+          rounded-lg
+          mb-3
+          cursor-pointer
+          hover:scale-[1.02]
+          transition
+        "
+                />
 
                 {img.is_selected && (
                   <div className="mb-2 text-green-600 font-semibold">
-                    ✅ Selected
+                    Selected
                   </div>
                 )}
 
@@ -209,9 +221,22 @@ export default function TaskDetailsPage() {
           </div>
           <button
             onClick={submitSelection}
-            className="mt-6 px-5 py-3 bg-green-600 text-white rounded-lg">
+            className="mt-6 px-5 py-3 bg-green-600 text-white rounded-lg"
+          >
             Submit Selected Images
           </button>
+
+          {previewImage && (
+            <div
+              className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+              onClick={() => setPreviewImage("")}
+            >
+              <img
+                src={previewImage}
+                alt=""
+                className="max-w-[90vw] max-h-[90vh] rounded-xl"/>
+            </div>
+          )}
         </div>
       </div>
     </div>

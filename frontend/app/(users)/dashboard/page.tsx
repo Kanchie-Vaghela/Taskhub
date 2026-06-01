@@ -26,18 +26,69 @@ export default function UserDashboard() {
   }, []);
 
   return (
-    <div>
-      <h1>My Tasks</h1>
+  <div className="max-w-5xl mx-auto">
+    <div className="mb-8">
+      <h1 className="text-3xl font-bold">
+        My Tasks
+      </h1>
 
+      <p className="text-gray-500 mt-2">
+        View and manage your assigned tasks
+      </p>
+    </div>
+
+    <div className="grid gap-4">
       {tasks.map((task) => (
-        <div key={task.id}>
-          <Link href={`/tasks/${task.id}`}>
-            <h3>{task.title}</h3>
-          </Link>
-          <p>{task.description}</p>
-          <p>{task.status}</p>
-        </div>
+        <Link
+          key={task.id}
+          href={`/tasks/${task.id}`}
+        >
+          <div
+            className="
+              bg-white
+              border
+              rounded-xl
+              p-5
+              hover:shadow-md
+              hover:border-gray-300
+              transition
+              cursor-pointer
+            "
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-lg font-semibold">
+                  {task.title}
+                </h3>
+
+                <p className="text-gray-600 mt-2">
+                  {task.description}
+                </p>
+              </div>
+
+              <span
+                className={`
+                  px-3
+                  py-1
+                  rounded-full
+                  text-sm
+                  font-medium
+                  ${
+                    task.status === "completed"
+                      ? "bg-green-100 text-green-700"
+                      : task.status === "in_progress"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-blue-100 text-blue-700"
+                  }
+                `}
+              >
+                {task.status}
+              </span>
+            </div>
+          </div>
+        </Link>
       ))}
     </div>
-  );
+  </div>
+);
 }
