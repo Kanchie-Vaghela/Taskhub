@@ -135,7 +135,7 @@ def submit_selection(task_id):
     supabase.table(
         "tasks"
     ).update({
-        "status": "completed"
+        "status": "review"
     }).eq(
         "id",
         task_id

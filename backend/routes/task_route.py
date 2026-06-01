@@ -117,3 +117,43 @@ def get_user_tasks(user_id):
 
     return tasks.data
 
+@task_bp.route(
+    "/<task_id>/approve",
+    methods=["PATCH"]
+)
+def approve_task(task_id):
+
+    supabase.table(
+        "tasks"
+    ).update({
+        "status": "completed"
+    }).eq(
+        "id",
+        task_id
+    ).execute()
+
+    return {
+        "message":
+        "Approved"
+    }
+    
+@task_bp.route(
+    "/<task_id>/revision",
+    methods=["PATCH"]
+)
+def request_revision(task_id):
+
+    supabase.table(
+        "tasks"
+    ).update({
+        "status":
+        "in_progress"
+    }).eq(
+        "id",
+        task_id
+    ).execute()
+
+    return {
+        "message":
+        "Revision requested"
+    }
