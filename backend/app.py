@@ -16,13 +16,13 @@ threading.Thread(
 
 limiter.init_app(app)
 
+import os
+
 CORS(
     app,
-    resources={
-        r"/*": {
-            "origins": "http://localhost:3000"
-        }
-    }
+    origins=[
+        os.getenv("FRONTEND_URL")
+    ]
 )
 
 app.register_blueprint(
