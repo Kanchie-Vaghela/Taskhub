@@ -295,9 +295,23 @@ TaskHub is a production-inspired workflow management system demonstrating:
 
 ## Known Limitations
 
-### AI Generation Uses Simulated Outputs
+###Simulated AI Image Generation
 
-The current implementation simulates AI image generation using placeholder images and a background worker process. The generation workflow, job processing, selection system, and review pipeline are fully implemented, but a production AI model has not yet been integrated.
+The current version uses a simulated image generation workflow for demonstration purposes. Generated images are created using placeholder image URLs rather than a production AI model.
+
+As a result:
+
+Generated images may change when refreshed because placeholder image services can return different images for the same URL.
+Image content is not actually generated from the selected style or product image.
+The job queue, worker processing, image selection, review workflow, and submission pipeline are fully implemented, but the AI generation layer is mocked.
+
+In a production version, this would be replaced with an AI image generation provider such as OpenAI Images, Stability AI, Replicate, or a custom model deployment.
+
+### Simplified Background Processing
+
+For deployment simplicity and cost efficiency, the worker process currently runs within the same service as the Flask API.
+
+While suitable for portfolio and demonstration purposes, a production deployment would use a dedicated background worker service and a queue system such as Redis, Celery, RQ, or BullMQ to improve reliability and scalability.
 
 ### Email Delivery Restrictions
 
