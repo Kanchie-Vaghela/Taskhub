@@ -11,79 +11,87 @@ sys.path.append(
 
 import time
 from services.supabase import supabase
-print("Worker started...")
 
-while True:
 
-    jobs = (
-        supabase
-        .table("jobs")
-        .select("*")
-        .eq("status", "queued")
-        .execute()
-    )
+def start_worker():
 
-    for job in jobs.data:
+    print("Worker started...")
 
-        print(
-            f"Processing {job['id']}"
+    while True:
+
+        jobs = (
+            supabase
+            .table("jobs")
+            .select("*")
+            .eq("status", "queued")
+            .execute()
         )
 
-        supabase.table(
-            "jobs"
-        ).update({
-            "status": "processing"
-        }).eq(
-            "id",
-            job["id"]
-        ).execute()
+        for job in jobs.data:
 
-        time.sleep(5)
+            print(
+                f"Processing {job['id']}"
+            )
 
-        images = [
-        {
-            "task_id": job["task_id"],
-            "image_type": "luxury",
-            "image_url":
-            "https://picsum.photos/600/400",
-            "prompt_used":
-            "fake generation",
-            "angle": "front",
-            "is_selected": False,
-            "metadata": {
-                "provider": "fake"
-        }
-        },
-        {
-            "task_id": job["task_id"],
-            "image_type": "luxury",
-            "image_url":
-            "https://picsum.photos/600/401",
-            "prompt_used":
-            "fake generation",
-            "angle": "side",
-            "is_selected": False,
-            "metadata": {
-                "provider": "fake"
-        }
-        }
-        ]   
+            supabase.table(
+                "jobs"
+            ).update({
+                "status": "processing"
+            }).eq(
+                "id",
+                job["id"]
+            ).execute()
 
-        supabase.table(
-            "generated_images"
-        ).insert(images).execute()
+            time.sleep(5)
 
-        supabase.table(
-            "jobs"
-        ).update({
-            "status": "completed"
-        }).eq(
-            "id",
-            job["id"]
-        ).execute()
+            images = [
+                {
+                    "task_id": job["task_id"],
+                    "image_type": "luxury",
+                    "image_url":
+                    "https://picsum.photos/600/400",
+                    "prompt_used":
+                    "fake generation",
+                    "angle": "front",
+                    "is_selected": False,
+                    "metadata": {
+                        "provider": "fake"
+                    }
+                },
+                {
+                    "task_id": job["task_id"],
+                    "image_type": "luxury",
+                    "image_url":
+                    "https://picsum.photos/600/401",
+                    "prompt_used":
+                    "fake generation",
+                    "angle": "side",
+                    "is_selected": False,
+                    "metadata": {
+                        "provider": "fake"
+                    }
+                }
+            ]
 
-        print(
-            f"Completed {job['id']}"
-        )
+            supabase.table(
+                "generated_images"
+            ).insert(images).execute()
 
-    time.sleep(2)
+            supabase.table(
+                "jobs"
+            ).update({
+                "status": "completed"
+            }).eq(
+                "id",
+                job["id"]
+            ).execute()
+
+            print(
+                f"Completed {job['id']}"
+            )
+
+        time.sleep(2)
+
+
+if __name__ == "__main__":
+    start_worker()

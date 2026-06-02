@@ -5,8 +5,14 @@ from routes.auth_route import auth_bp
 from routes.task_route import task_bp
 from routes.ai_route import ai_bp
 from extensions import limiter
+import threading
+from workers.ai_worker import start_worker
 
 app = Flask(__name__)
+threading.Thread(
+    target=start_worker,
+    daemon=True
+).start()
 
 limiter.init_app(app)
 
