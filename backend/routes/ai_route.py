@@ -113,10 +113,7 @@ def select_generation(generation_id):
         "message": "Updated"
     }
     
-@ai_bp.route(
-    "/tasks/<task_id>/submit",
-    methods=["POST"]
-)
+@ai_bp.route( "/tasks/<task_id>/submit", methods=["POST"])
 def submit_selection(task_id):
 
     selected = (

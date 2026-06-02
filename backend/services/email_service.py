@@ -11,10 +11,15 @@ def send_email(
     html
 ):
 
-    resend.Emails.send({
-        "from":
-        "TaskHub <onboarding@resend.dev>",
-        "to": [to_email],
-        "subject": subject,
-        "html": html
+    print("ABOUT TO SEND EMAIL")
+  
+    response = resend.Emails.send({
+    "from":
+    "TaskHub <onboarding@resend.dev>",
+    "to": [to_email],
+    "subject": subject,
+    "html": html
     })
+
+    print("EMAIL RESPONSE:")
+    print(response)
