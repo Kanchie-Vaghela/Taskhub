@@ -26,7 +26,7 @@ def sync_user():
             .insert({
                 "id": data["id"],
                 "email": data["email"],
-                "name": data["name"],
+                "name": data.get("name") or data["email"].split("@")[0],
                 "role": "user"
             })
             .execute()
