@@ -7,6 +7,8 @@ from routes.ai_route import ai_bp
 from extensions import limiter
 import threading
 from workers.ai_worker import start_worker
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 threading.Thread(
@@ -18,11 +20,10 @@ limiter.init_app(app)
 
 import os
 
+
 CORS(
     app,
-    origins=[
-        os.getenv("FRONTEND_URL")
-    ]
+    resources={r"/*": {"origins": "*"}}
 )
 
 app.register_blueprint(
