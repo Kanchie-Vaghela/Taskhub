@@ -307,6 +307,12 @@ The job queue, worker processing, image selection, review workflow, and submissi
 
 In a production version, this would be replaced with an AI image generation provider such as OpenAI Images, Stability AI, Replicate, or a custom model deployment.
 
+### Simplified Background Processing
+
+For deployment simplicity and cost efficiency, the worker process currently runs within the same service as the Flask API.
+
+While suitable for portfolio and demonstration purposes, a production deployment would use a dedicated background worker service and a queue system such as Redis, Celery, RQ, or BullMQ to improve reliability and scalability.
+
 ### Email Delivery Restrictions
 
 Email notifications are implemented using Resend. Sending emails to arbitrary recipients requires domain verification. During development, email functionality may be limited to verified recipient addresses.
