@@ -4,21 +4,43 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex bg-gray-50">
-      <aside className="w-64 bg-white border-r p-6">
-        <h1 className="text-2xl font-bold mb-8">
-          TaskHub Admin
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-cyan-50 to-white flex">
+
+      {/* Sidebar */}
+      <aside
+        className="
+          w-72
+          m-4
+          rounded-3xl
+          bg-white/30
+          backdrop-blur-2xl
+          border border-white/40
+          shadow-2xl
+          flex
+          flex-col
+          p-8
+        "
+      >
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-500 to-cyan-400 bg-clip-text text-transparent mb-10">
+          TaskHub
         </h1>
 
-        <nav className="flex flex-col gap-2">
+        <nav className="flex flex-col gap-3">
+
           <a
             href="/admin/dashboard"
             className="
-              px-4
-              py-3
-              rounded-lg
-              hover:bg-gray-100
-              transition
+              px-5
+              py-4
+              rounded-2xl
+              hover:bg-sky-100/70
+              transition-all
+              hover:translate-x-1
+              font-semibold
+              focus:bg-sky-100/70
+              focus:translate-x-1
+              text-sky-600  
+              text-lg
             "
           >
              Dashboard
@@ -27,11 +49,17 @@ export default function AdminLayout({
           <a
             href="/admin/tasks"
             className="
-              px-4
-              py-3
-              rounded-lg
-              hover:bg-gray-100
-              transition
+              px-5
+              py-4
+              rounded-2xl
+              hover:bg-sky-100/70
+              transition-all
+              hover:translate-x-1
+              font-semibold
+              focus:bg-sky-100/70
+              focus:translate-x-1
+              text-sky-600  
+              text-lg
             "
           >
              Tasks
@@ -40,21 +68,45 @@ export default function AdminLayout({
           <a
             href="/admin/review"
             className="
-              px-4
-              py-3
-              rounded-lg
-              hover:bg-gray-100
-              transition
+              px-5
+              py-4
+              rounded-2xl
+              hover:bg-sky-100/70
+              transition-all
+              hover:translate-x-1
+              font-semibold
+              focus:bg-sky-100/70
+              focus:translate-x-1
+              text-sky-600  
+              text-lg
             "
           >
              Review Queue
           </a>
+
         </nav>
+
+      
       </aside>
 
-      <main className="flex-1 p-4 md:p-8">
-        {children}
+      {/* Main */}
+      <main className="flex-1 p-6">
+        <div
+          className="
+            rounded-[32px]
+            bg-white/25
+            backdrop-blur-2xl
+            border
+            border-white/40
+            shadow-2xl
+            p-8
+            min-h-[calc(100vh-3rem)]
+          "
+        >
+          {children}
+        </div>
       </main>
+
     </div>
   );
 }

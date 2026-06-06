@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import GlassCard from "../glasscard";
+import Link from "next/link";
+
 
 type Task = {
   id: string;
@@ -96,81 +99,73 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="p-4 md:p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">
-          Admin Dashboard
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-white to-cyan-50 p-6 md:p-10">
 
-        <p className="text-gray-500 mt-2">
-          Track task progress across the
-          workflow
-        </p>
-      </div>
+  {/* Header */}
+  <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+    <div>
+      <h1 className="text-5xl font-extrabold tracking-tight bg-gradient-to-r from-sky-500 to-cyan-400 bg-clip-text text-transparent">
+        Admin Dashboard
+      </h1>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-gray-500 text-sm">
-            Total Tasks
-          </p>
-
-          <h2 className="text-3xl font-bold">
-            {tasks.length}
-          </h2>
-        </div>
-
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-gray-500 text-sm">
-            Assigned
-          </p>
-
-          <h2 className="text-3xl font-bold">
-            {assigned.length}
-          </h2>
-        </div>
-
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-gray-500 text-sm">
-            In Progress
-          </p>
-
-          <h2 className="text-3xl font-bold">
-            {inProgress.length}
-          </h2>
-        </div>
-
-        <div className="bg-white border rounded-xl p-4">
-          <p className="text-gray-500 text-sm">
-            Completed
-          </p>
-
-          <h2 className="text-3xl font-bold">
-            {completed.length}
-          </h2>
-        </div>
-      </div>
-
-      <div className="grid lg:grid-cols-4 gap-6">
-        <Column
-          title="Assigned"
-          tasks={assigned}
-        />
-
-        <Column
-          title="In Progress"
-          tasks={inProgress}
-        />
-
-        <Column
-          title="Review"
-          tasks={review}
-        />
-
-        <Column
-          title="Completed"
-          tasks={completed}
-        />
-      </div>
+      <p className="text-slate-500 mt-3 text-lg">
+        Monitor tasks flowing through your system.
+      </p>
     </div>
+<Link
+  href="/admin/tasks"
+  className="
+    inline-block
+    mt-5 md:mt-0
+    px-6 py-3
+    rounded-2xl
+    bg-white/40
+    backdrop-blur-xl
+    border border-white/50
+    shadow-lg
+    hover:shadow-cyan-300/40
+    hover:scale-105
+    transition
+  "
+>
+  + New Task
+</Link>
+  </div>
+
+  {/* Stats */}
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+
+    <GlassCard title="Total Tasks" value={tasks.length} color="from-sky-400 to-cyan-300"/>
+
+    <GlassCard title="Assigned" value={assigned.length} color="from-cyan-400 to-blue-300"/>
+
+    <GlassCard title="In Progress" value={inProgress.length} color="from-blue-400 to-indigo-300"/>
+
+    <GlassCard title="Completed" value={completed.length} color="from-teal-400 to-cyan-300"/>
+
+  </div>
+
+  {/* Kanban */}
+  <div className="grid lg:grid-cols-4 gap-6">
+
+    <div className="rounded-3xl bg-white/35 backdrop-blur-2xl border border-white/50 p-4 shadow-xl">
+      <Column title="Assigned" tasks={assigned}/>
+    </div>
+
+    <div className="rounded-3xl bg-white/35 backdrop-blur-2xl border border-white/50 p-4 shadow-xl">
+      <Column title="In Progress" tasks={inProgress}/>
+    </div>
+
+    <div className="rounded-3xl bg-white/35 backdrop-blur-2xl border border-white/50 p-4 shadow-xl">
+      <Column title="Review" tasks={review}/>
+    </div>
+
+    <div className="rounded-3xl bg-white/35 backdrop-blur-2xl border border-white/50 p-4 shadow-xl">
+      <Column title="Completed" tasks={completed}/>
+    </div>
+
+  </div>
+
+</div>
   );
 }
